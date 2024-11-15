@@ -4,10 +4,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
 } from 'typeorm';
-import { Role } from './role.entity';
+import { Role } from './rol.enum';
+
+
 
 @Entity()
 export class User {
@@ -20,11 +20,24 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ unique: true }) // hashear o algo
+  @Column()
+  name: string;
+
+  @Column()
+  lastname: string;
+
+  @Column()
+
+  phone: string;
+
+  @Column()
+  country: string;
+
+  @Column({ unique: true }) 
   password: string;
 
   @Column()
-  role_id: number;
+  roles:Role[]
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
@@ -36,7 +49,4 @@ export class User {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => Role, (role) => role.users)
-  @JoinColumn({ name: 'role_id' })
-  role: Role;
 }
