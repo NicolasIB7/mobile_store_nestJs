@@ -27,16 +27,18 @@ export class User {
   lastname: string;
 
   @Column()
-
   phone: string;
 
   @Column()
   country: string;
 
+  @Column()
+  birthDate: string;
+
   @Column({ unique: true }) 
   password: string;
 
-  @Column()
+  @Column({default:[Role.User]})
   roles:Role[]
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

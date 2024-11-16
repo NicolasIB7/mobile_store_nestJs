@@ -27,5 +27,3 @@ import { AuthGuard } from './auth.guard';
 export class AuthModule {}
 
 
-
-// HABILITAR PARA REGISTRO DE USUARIOS Y CAMBIAR CONTRASEÑA.
