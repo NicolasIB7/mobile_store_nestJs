@@ -38,7 +38,7 @@ import { IS_PUBLIC_KEY } from './public.decorator';
           }
         );
 
-        request['user'] = payload;
+        request['email'] = payload;
       } catch {
         throw new UnauthorizedException();
       }

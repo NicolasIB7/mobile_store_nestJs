@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from 'src/users/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -11,18 +16,29 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(username: string, pass: string): Promise<any> {
-    const user = await this.userService.findOne(username);
+  async signIn(email: string, pass: string): Promise<any> {
+    try {
+      const user = await this.userService.findOne(email);
 
-    const isValidPassword = await bcrypt.compare(pass, user?.password);
+      if (!user) {
+        throw new UnauthorizedException();
+      }
 
-    if (!user || !isValidPassword) {
-      throw new UnauthorizedException();
+      const isValidPassword = await bcrypt.compare(pass, user?.password);
+
+      if (!user || !isValidPassword) {
+        throw new UnauthorizedException();
+      }
+      const payload = { sub: user.uuid, email: user.email };
+      return {
+        access_token: await this.jwtService.signAsync(payload),
+      };
+    } catch (error) {
+      throw new HttpException(
+        `Ha ocurrido un error al iniciar sesión: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    const payload = { sub: user.uuid, username: user.username };
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
   }
 
   async signUp(signUpDto: SignUpDto): Promise<any> {
@@ -33,8 +49,8 @@ export class AuthService {
   }
 }
 
-const hashPass = async (password) => {
-  const salt = 10;
+const hashPass = async (password: string) => {
+  const salt: number = 10;
   const hash = await bcrypt.hash(password, salt);
 
   return hash;

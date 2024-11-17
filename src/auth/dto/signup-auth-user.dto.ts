@@ -1,24 +1,27 @@
-import {IsString} from 'class-validator'
+import { IsDateString, IsEmail, IsPhoneNumber, IsString } from 'class-validator';
 
-export class SignUpDto{
-    @IsString()
-    username:string;
+export class SignUpDto {
+  @IsString()
+  username: string;
 
-    @IsString()
-    name: string;
-  
-    @IsString()
-    lastname: string;
-  
-    @IsString()
-    phone: string;
-  
-    @IsString()
-    country: string;
+  @IsEmail()
+  email: string;
 
-    @IsString()
-    birthDate: string;
+  @IsString()
+  name: string;
 
-    @IsString()
-    password:string;
+  @IsString()
+  lastname: string;
+
+  @IsPhoneNumber()
+  phone: string;
+
+  @IsString()
+  country: string;
+
+  @IsDateString()
+  birthDate: string;
+
+  @IsString()
+  password: string;
 }
