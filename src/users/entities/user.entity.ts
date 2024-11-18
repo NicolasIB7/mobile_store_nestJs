@@ -38,8 +38,8 @@ export class User {
   @Column({ unique: true }) 
   password: string;
 
-  @Column({default:[Role.User]})
-  roles:Role[]
+  @Column('simple-array', { default: Role.User }) 
+  roles: Role[];
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
