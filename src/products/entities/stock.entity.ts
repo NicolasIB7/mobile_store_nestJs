@@ -5,6 +5,7 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     ManyToOne,
+    OneToOne,
     JoinColumn
   } from 'typeorm';
 import { Product } from './product.entity';
@@ -32,7 +33,11 @@ import { Product } from './product.entity';
     })
     updatedAt: Date;
 
-    @ManyToOne(() => Product, product => product.stocks)
-    @JoinColumn({ name: 'product_id' })  
+    // @ManyToOne(() => Product, product => product.stocks)
+    // @JoinColumn({ name: 'product_id' })  
+    // product: Product;
+
+    @OneToOne(() => Product, (product) => product.stocks)
+    @JoinColumn({ name: 'product_id' })
     product: Product;
   }

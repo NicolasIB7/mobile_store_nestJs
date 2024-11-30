@@ -30,4 +30,3 @@ import * as winston from 'winston';
 })
 export class AppModule {}
 
-// VER VIDEO DE CUSTOMIZAR LOS TRANSPORTS, APLICAR LOGGER A CODIGO, TESTEAR

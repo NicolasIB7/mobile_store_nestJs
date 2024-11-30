@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  OneToOne
 } from 'typeorm';
 import { Stock } from './stock.entity';
 import { Inventory } from './inventory.entity';
@@ -37,12 +38,13 @@ export class Product {
   })
   updatedAt: Date;
 
-  @OneToMany(() => Stock, (stock) => stock.product)
-  stocks: Stock[];
+  @OneToOne(() => Stock, (stock) => stock.product, { cascade: true, eager: true })
+  stocks: Stock;
 
   @OneToMany(() => Inventory, (inventory) => inventory.product)
   inventories: Inventory[];
 
-  @OneToMany(() => Spec, (spec) => spec.product)
-  specs: Spec[];
+
+  @OneToOne(() => Spec, (spec) => spec.product, { cascade: true, eager: true }) // eager true automaticamente me trae las specs sin tener que especificar en una consulta.
+  specs: Spec;
 }
