@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Request } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Put, Request } from "@nestjs/common";
 import { ProductService } from "./product.service";
 
 
@@ -12,12 +12,33 @@ export class ProductController{
         await this.productService.findProduct(id)
     }
 
+    @Get()
+
+    async getProducts():Promise<any>{ //evitar any
+        await this.productService.findProducts() //agregar filtrado, paginado.
+
+    }
+
+
+    @Delete(':id')
+    async deleteProduct(@Param('id') id:string):Promise<any>{ //evitar any
+        await this.productService.removeProduct(id) // ver eliminación de todo el producto de todas las tablas.
+
+    }
+
+    @Put(':id')
+    async updateProduct(@Param('id') id:string, @Body() updateDto: UpdateDto):Promise<any>{ //evitar any
+        await this.productService.updateProduct(id, updateDto) // VER SI ACTUALIZA BIEN TODO POR MÁS QUE HAYA DIF TABLAS.
+
+    }
+
+
+
     
-// Buscar productos, paginado, filtrado
-// buscar producto por id
-// actualizar producto(ver que pasa si recibo propiedad de la tabla spec me deberia actualizar igual)
-// Borrar producto en cascada
-// si agrego producto debe pasar algo en las tablas de stock y de inventario.
+
+
+
+
 // VER COMO IMPLEMENTAR KAFKA 
 // UTILIZAR TRANSACCIONES PARA HACER TODO DE UNA Y SI FALLA REVERTIR, POR EJEMPLO EN EL CASO DE AGREGAR PROUDCTO Y MODIFICAR TODAS LAS OTRAS TABLAS.
 // EXISTE EL ENTITYMANAGER PARA HACER AUTOMATICO O QUERY RUNNER QUE ES MAS MANUAL, INVESTIGAR ENTITY
