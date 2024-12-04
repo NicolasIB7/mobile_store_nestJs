@@ -10,6 +10,7 @@ import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { ProductDto } from './dto/product.dto';
 
 @Injectable()
 export class ProductService {
@@ -65,9 +66,37 @@ export class ProductService {
     }
   }
 
-  async updateProduct(id:string, updateDto:UpdateDto) {
+  async updateProduct(id:string, productDto:ProductDto) {
     try {
-      await this.productRepository.update({uuid:id}, updateDto);
+      const product = await this.productRepository.findOne({
+        where: { uuid: id },
+        relations: ['stocks', 'specs'], 
+      });
+
+      if (!product) {
+        throw new HttpException('Producto no encontrado', HttpStatus.NOT_FOUND);
+      }
+  
+      Object.assign(product, productDto);
+
+      await this.productRepository.save(productDto);
+
+    } catch (error) {
+      this.logger.error(`Error al remover el producto`, error);
+      throw new HttpException(
+        `Ha ocurrido un error: ${error}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+
+  async createProduct(productDto:ProductDto) {
+    try {
+
+      
+
+      await this.productRepository.save(productDto);
 
     } catch (error) {
       this.logger.error(`Error al remover el producto`, error);

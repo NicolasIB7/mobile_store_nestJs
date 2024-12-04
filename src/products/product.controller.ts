@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Put, Request } from "@nestjs/common";
 import { ProductService } from "./product.service";
+import { ProductDto } from "./dto/product.dto";
 
 
 @Controller('product')
@@ -27,8 +28,8 @@ export class ProductController{
     }
 
     @Put(':id')
-    async updateProduct(@Param('id') id:string, @Body() updateDto: UpdateDto):Promise<any>{ //evitar any
-        await this.productService.updateProduct(id, updateDto) // VER SI ACTUALIZA BIEN TODO POR MÁS QUE HAYA DIF TABLAS.
+    async updateProduct(@Param('id') id:string, @Body() productDto: ProductDto):Promise<any>{ //evitar any
+        await this.productService.updateProduct(id, productDto) // VER SI ACTUALIZA BIEN TODO POR MÁS QUE HAYA DIF TABLAS.
 
     }
 
