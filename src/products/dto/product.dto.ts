@@ -1,4 +1,7 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString, ValidateNested } from 'class-validator';
+import { SpecDto } from './spec.dto';
+import { StockDto } from './stock.dto';
+import { Type } from '@nestjs/class-transformer';
 
 export class ProductDto {
   @IsString()
@@ -10,39 +13,15 @@ export class ProductDto {
   @IsNumber()
   price: number;
 
-  @IsString()
-  storage: string;
+  @ValidateNested()
+  @Type(() => StockDto)
+  stock: StockDto;
 
-  @IsString()
-  memory_ram: string;
+  @ValidateNested()
+  @Type(() => SpecDto)
+  specs: SpecDto;
 
-  @IsString()
-  screen_size: string;
-
-  @IsString()
-  batery: string;
-
-  @IsString()
-  color: string;
-
-  @IsString()
-  weight: string;
-
-  @IsString()
-  processor: string;
-
-  
-  @IsNumber()
-  total_stock: number;
 }
 
-
-// armar 3 dto por cada uno y agregar esto en el dto principal:   @ValidateNested()
-  // @Type(() => StockDto)
-  // stock: StockDto;
-
-  // @ValidateNested()
-  // @Type(() => SpecDto)
-  // specs: SpecDto;
 
   // luego usar el create en el service para ir armando las instancias, probar e investigar en la docu.

@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { ProductDto } from './dto/product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -19,14 +20,16 @@ export class ProductService {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
-  async findProduct(id: string) {
+  async findProduct(id: string):Promise<Product[]> {
     try {
-      const product = await this.productRepository.findBy({ uuid:id });
+      const product = await this.productRepository.findBy({ uuid: id });
+      
 
       if (!product) {
         this.logger.error('El producto no fue encontrado');
         throw new NotFoundException('El producto no fue encontrado');
       }
+      return product;
     } catch (error) {
       this.logger.error(`Error al encontrar producto`, error);
       throw new HttpException(
@@ -36,8 +39,7 @@ export class ProductService {
     }
   }
 
-
-  async findProducts() {
+  async findProducts(): Promise<Product[]> {
     try {
       const products = await this.productRepository.find();
 
@@ -45,6 +47,7 @@ export class ProductService {
         this.logger.error('Los productos no se encontraron.');
         throw new NotFoundException('Los productos no se encontraron.');
       }
+      return products;
     } catch (error) {
       this.logger.error(`Error al encontrar los productos`, error);
       throw new HttpException(
@@ -53,10 +56,9 @@ export class ProductService {
       );
     }
   }
-  async removeProduct(id:string) {
+  async removeProduct(id: string) {
     try {
-      await this.productRepository.delete({uuid:id});
-
+      await this.productRepository.delete({ uuid: id });
     } catch (error) {
       this.logger.error(`Error al remover el producto`, error);
       throw new HttpException(
@@ -66,23 +68,22 @@ export class ProductService {
     }
   }
 
-  async updateProduct(id:string, productDto:ProductDto) {
+  async updateProduct(id: string, updateProductDto: UpdateProductDto):Promise<Product> {
     try {
       const product = await this.productRepository.findOne({
         where: { uuid: id },
-        relations: ['stocks', 'specs'], 
+        relations: ['stocks', 'specs'],
       });
 
       if (!product) {
         throw new HttpException('Producto no encontrado', HttpStatus.NOT_FOUND);
       }
-  
-      Object.assign(product, productDto);
 
-      await this.productRepository.save(productDto);
+      Object.assign(product, updateProductDto);
 
+      return await this.productRepository.save(updateProductDto);
     } catch (error) {
-      this.logger.error(`Error al remover el producto`, error);
+      this.logger.error(`Error al actualizar el producto`, error);
       throw new HttpException(
         `Ha ocurrido un error: ${error}`,
         HttpStatus.BAD_REQUEST,
@@ -90,23 +91,15 @@ export class ProductService {
     }
   }
 
-
-  async createProduct(productDto:ProductDto) {
+  async createProduct(productDto: ProductDto):Promise<Product> {
     try {
-
-      
-
-      await this.productRepository.save(productDto);
-
+      return await this.productRepository.save(productDto);
     } catch (error) {
-      this.logger.error(`Error al remover el producto`, error);
+      this.logger.error(`Error al crear el producto`, error);
       throw new HttpException(
         `Ha ocurrido un error: ${error}`,
         HttpStatus.BAD_REQUEST,
       );
     }
   }
-
-
-
 }
