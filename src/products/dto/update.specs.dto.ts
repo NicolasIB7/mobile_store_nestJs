@@ -1,36 +1,32 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
-export class UpdateProductDto{
 
+export class UpdateSpecsDto{
     @IsString()
-    brand: string;
-  
-    @IsString()
-    model: string;
-  
-    @IsNumber()
-    price: number;
-    @IsString()
+    @IsOptional()
     storage: string;
   
     @IsString()
+    @IsOptional()
     memory_ram: string;
   
     @IsString()
+    @IsOptional()
     screen_size: string;
   
     @IsString()
+    @IsOptional()
     batery: string;
   
     @IsString()
+    @IsOptional()
     color: string;
   
     @IsString()
+    @IsOptional()
     weight: string;
   
     @IsString()
+    @IsOptional()
     processor: string;
-
-    @IsNumber()
-    total_stock: number;
 }

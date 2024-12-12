@@ -49,7 +49,7 @@ export class Spec {
   })
   updatedAt: Date;
 
-  @OneToOne(() => Product, (product) => product.specs)
+  @OneToOne(() => Product, (product) => product.specs,{onDelete: 'CASCADE'})
   @JoinColumn({ name: 'product_id' })
   product: Product;
   // @ManyToOne(() => Product, (product) => product.specs)

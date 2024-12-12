@@ -4,12 +4,14 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './users/users.module';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
+import { ProductModule } from './products/product.module';
 
 @Module({
   imports: [
     DbModule,
     AuthModule,
     UserModule,
+    ProductModule,
     WinstonModule.forRoot({
       level: 'info',
       format: winston.format.combine(

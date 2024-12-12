@@ -38,13 +38,13 @@ export class Product {
   })
   updatedAt: Date;
 
-  @OneToOne(() => Stock, (stock) => stock.product, { cascade: true, eager: true })
+  @OneToOne(() => Stock, (stock) => stock.product, { cascade: true, eager: true, onDelete: 'CASCADE' })
   stocks: Stock;
 
   @OneToMany(() => Inventory, (inventory) => inventory.product)
   inventories: Inventory[];
 
 
-  @OneToOne(() => Spec, (spec) => spec.product, { cascade: true, eager: true }) // eager true automaticamente me trae las specs sin tener que especificar en una consulta.
+  @OneToOne(() => Spec, (spec) => spec.product, { cascade: true, eager: true, onDelete: 'CASCADE' }) // eager true automaticamente me trae las specs sin tener que especificar en una consulta.
   specs: Spec;
 }

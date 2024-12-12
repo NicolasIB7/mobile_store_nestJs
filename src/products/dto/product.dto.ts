@@ -2,6 +2,7 @@ import { IsNumber, IsString, ValidateNested } from 'class-validator';
 import { SpecDto } from './spec.dto';
 import { StockDto } from './stock.dto';
 import { Type } from '@nestjs/class-transformer';
+import { InventoryDto } from './inventory.dto';
 
 export class ProductDto {
   @IsString()
@@ -15,11 +16,15 @@ export class ProductDto {
 
   @ValidateNested()
   @Type(() => StockDto)
-  stock: StockDto;
+  stocks: StockDto;
 
   @ValidateNested()
   @Type(() => SpecDto)
   specs: SpecDto;
+
+  // @ValidateNested()
+  // @Type(() => InventoryDto)
+  // inventories: InventoryDto;
 
 }
 

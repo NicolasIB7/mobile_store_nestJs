@@ -9,10 +9,13 @@ import { Product } from './entities/product.entity';
 import { RolesGuard } from 'src/users/roles.guard';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
+import { Stock } from './entities/stock.entity';
+import { Inventory } from './entities/inventory.entity';
+import { Spec } from './entities/specs.entity';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product])],
+  imports: [TypeOrmModule.forFeature([Product, Stock,Inventory, Spec])],
   providers: [ProductService,
     {
       provide: APP_GUARD,
@@ -22,4 +25,4 @@ import { ProductService } from './product.service';
   controllers: [ProductController],
 //   exports: []
 })
-export class UserModule {}
+export class ProductModule {}

@@ -11,7 +11,7 @@ import { Repository } from 'typeorm';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { ProductDto } from './dto/product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { UpdateProductDto } from './dto/update.product.dto';
 
 @Injectable()
 export class ProductService {
