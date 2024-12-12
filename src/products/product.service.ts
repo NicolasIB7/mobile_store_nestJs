@@ -12,18 +12,24 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { ProductDto } from './dto/product.dto';
 import { UpdateProductDto } from './dto/update.product.dto';
+import { Inventory } from './entities/inventory.entity';
+import { CreateInventoryDto } from './dto/create.inventory.dto';
+import { Stock } from './entities/stock.entity';
+import { StockDto } from './dto/stock.dto';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product) private productRepository: Repository<Product>,
+    @InjectRepository(Inventory)
+    private inventoryRepository: Repository<Inventory>,
+    @InjectRepository(Stock) private stockRepository: Repository<Stock>,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
-  async findProduct(id: string):Promise<Product[]> {
+  async findProduct(id: string): Promise<Product[]> {
     try {
       const product = await this.productRepository.findBy({ uuid: id });
-      
 
       if (!product) {
         this.logger.error('El producto no fue encontrado');
@@ -68,7 +74,10 @@ export class ProductService {
     }
   }
 
-  async updateProduct(id: string, updateProductDto: UpdateProductDto):Promise<Product> {
+  async updateProduct(
+    id: string,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Product> {
     try {
       const product = await this.productRepository.findOne({
         where: { uuid: id },
@@ -79,9 +88,20 @@ export class ProductService {
         throw new HttpException('Producto no encontrado', HttpStatus.NOT_FOUND);
       }
 
-      Object.assign(product, updateProductDto);
+      if (updateProductDto.stocks) {
+        Object.assign(product.stocks, updateProductDto.stocks);
+      }
+      if (updateProductDto.specs) {
+        Object.assign(product.specs, updateProductDto.specs);
+      }
 
-      return await this.productRepository.save(updateProductDto);
+      Object.assign(product, {
+        ...updateProductDto,
+        stocks: product.stocks,
+        specs: product.specs,
+      });
+
+      return await this.productRepository.save(product);
     } catch (error) {
       this.logger.error(`Error al actualizar el producto`, error);
       throw new HttpException(
@@ -91,7 +111,9 @@ export class ProductService {
     }
   }
 
-  async createProduct(productDto: ProductDto):Promise<Product> {
+  // Deberia extraer el dato de stock y agregar manualente los datos para inventory ya que siempre sera de entrada y el stock sera el mismo que el stock de product.
+
+  async createProduct(productDto: ProductDto): Promise<Product> {
     try {
       return await this.productRepository.save(productDto);
     } catch (error) {
@@ -102,4 +124,65 @@ export class ProductService {
       );
     }
   }
+
+  //--------------------------------------------------------------------------------//
+
+  async addDataInventory(inventoryDto: CreateInventoryDto): Promise<Inventory> {
+    try {
+      const stock = await this.stockRepository.findOne({
+        where: { product_id: inventoryDto.product_id },
+      });
+
+      if (!stock) {
+        throw new Error('El producto no tiene un stock registrado');
+      }
+
+      let updatedStock = stock.total_stock;
+
+      if (inventoryDto.movement_type === 'Entrada') {
+        updatedStock += inventoryDto.stock_quantity;
+      } else if (inventoryDto.movement_type === 'Salida') {
+        if (stock.total_stock < inventoryDto.stock_quantity) {
+          throw new Error('No hay suficiente stock para realizar la salida');
+        }
+        updatedStock -= inventoryDto.stock_quantity;
+      }
+
+      await this.stockRepository.update(
+        { product_id: inventoryDto.product_id },
+        { total_stock: updatedStock },
+      );
+
+
+      return await this.inventoryRepository.save(inventoryDto);
+    } catch (error) {
+      this.logger.error(`Error al registrar un movimiento`, error);
+      throw new HttpException(
+        `Ha ocurrido un error: ${error}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+
+  async findInventories(id: string): Promise<Inventory[]> {
+    try {
+      const inventory = await this.inventoryRepository.find({
+        where: { product_id: id },
+      });
+
+      if (!inventory) {
+        this.logger.error('El inventario no fue encontrado');
+        throw new NotFoundException('El inventario no fue encontrado');
+      }
+      return inventory;
+    } catch (error) {
+      this.logger.error(`Error al encontrar inventario`, error);
+      throw new HttpException(
+        `Ha ocurrido un error: ${error}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }
+

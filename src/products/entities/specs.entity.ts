@@ -49,10 +49,8 @@ export class Spec {
   })
   updatedAt: Date;
 
-  @OneToOne(() => Product, (product) => product.specs,{onDelete: 'CASCADE'})
+  @OneToOne(() => Product, (product) => product.specs,{onDelete: 'CASCADE', onUpdate: 'CASCADE'})
   @JoinColumn({ name: 'product_id' })
   product: Product;
-  // @ManyToOne(() => Product, (product) => product.specs)
-  // @JoinColumn({ name: 'product_id' })
-  // product: Product;
+
 }

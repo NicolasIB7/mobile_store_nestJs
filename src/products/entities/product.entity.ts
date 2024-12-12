@@ -41,7 +41,7 @@ export class Product {
   @OneToOne(() => Stock, (stock) => stock.product, { cascade: true, eager: true, onDelete: 'CASCADE' })
   stocks: Stock;
 
-  @OneToMany(() => Inventory, (inventory) => inventory.product)
+  @OneToMany(() => Inventory, (inventory) => inventory.product, { cascade: true, eager: true, onDelete: 'CASCADE' })
   inventories: Inventory[];
 
 

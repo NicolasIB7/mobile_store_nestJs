@@ -22,9 +22,10 @@ export class ProductDto {
   @Type(() => SpecDto)
   specs: SpecDto;
 
-  // @ValidateNested()
-  // @Type(() => InventoryDto)
-  // inventories: InventoryDto;
+  @ValidateNested()
+  @Type(() => InventoryDto)
+  inventories: InventoryDto[];
+
 
 }
 

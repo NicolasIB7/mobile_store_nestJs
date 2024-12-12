@@ -11,6 +11,9 @@ import { ProductService } from './product.service';
 import { ProductDto } from './dto/product.dto';
 import { UpdateProductDto } from './dto/update.product.dto';
 import { Product } from './entities/product.entity';
+import { Inventory } from './entities/inventory.entity';
+import { CreateInventoryDto } from './dto/create.inventory.dto';
+
 @Controller('product')
 export class ProductController {
   constructor(private productService: ProductService) {}
@@ -55,6 +58,19 @@ export class ProductController {
   async createProduct(@Body() productDto: ProductDto): Promise<Product> {
     //evitar any
     return await this.productService.createProduct(productDto);
+  }
+
+
+  @Post('inventory')
+  async addInventory(@Body() InventoryDto: CreateInventoryDto): Promise<Inventory> {
+    //evitar any
+    return await this.productService.addDataInventory(InventoryDto);
+  }
+
+  @Get('inventory/:id')
+  async getInventories(@Param('id') id: string): Promise<Inventory[]> {
+
+    return await this.productService.findInventories(id);
   }
 
   // VER COMO IMPLEMENTAR KAFKA

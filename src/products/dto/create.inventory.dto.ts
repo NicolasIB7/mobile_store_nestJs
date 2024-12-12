@@ -5,7 +5,11 @@ export enum MovementType {
   SALIDA = 'Salida',
 }
 
-export class InventoryDto {
+export class CreateInventoryDto {
+
+  @IsString()
+product_id: string;
+   
   @IsString()
   movement_type: MovementType;
 

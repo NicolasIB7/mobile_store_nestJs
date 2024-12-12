@@ -37,7 +37,7 @@ import { Product } from './product.entity';
     // @JoinColumn({ name: 'product_id' })  
     // product: Product;
 
-    @OneToOne(() => Product, (product) => product.stocks, {onDelete: 'CASCADE'})
+    @OneToOne(() => Product, (product) => product.stocks, { onDelete: 'CASCADE', onUpdate: 'CASCADE'})
     @JoinColumn({ name: 'product_id' })
     product: Product;
   }

@@ -3,8 +3,9 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  ManyToOne,
   JoinColumn,
+  OneToOne,
+  ManyToOne,
 } from 'typeorm';
 import { Product } from './product.entity';
 
