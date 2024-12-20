@@ -1,0 +1,1 @@
+export const formatPage = (value: string): number => Number(value) || 1

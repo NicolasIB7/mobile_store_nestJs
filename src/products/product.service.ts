@@ -12,10 +12,12 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { ProductDto } from './dto/product.dto';
 import { UpdateProductDto } from './dto/update.product.dto';
-import { Inventory } from './entities/inventory.entity';
+import { Inventory, MovementType } from './entities/inventory.entity';
 import { CreateInventoryDto } from './dto/create.inventory.dto';
 import { Stock } from './entities/stock.entity';
-import { StockDto } from './dto/stock.dto';
+import { PaginateQueryRaw } from './helpers/paginateRaw.interface';
+import { formatPage } from './helpers/formatPage';
+import { formatTake } from './helpers/formatTake';
 
 @Injectable()
 export class ProductService {
@@ -45,9 +47,17 @@ export class ProductService {
     }
   }
 
-  async findProducts(): Promise<Product[]> {
+  async findProducts(query: PaginateQueryRaw): Promise<Product[]> {
     try {
-      const products = await this.productRepository.find();
+      const take = formatTake(query.take);
+      const page = formatPage(query.page);
+      const skip = take * page - take;
+
+      const [products, total] = await this.productRepository.findAndCount({
+        take,
+        skip,
+        relations: ['stocks', 'specs'],
+      });
 
       if (!products) {
         this.logger.error('Los productos no se encontraron.');
@@ -62,6 +72,7 @@ export class ProductService {
       );
     }
   }
+
   async removeProduct(id: string) {
     try {
       await this.productRepository.delete({ uuid: id });
@@ -111,11 +122,16 @@ export class ProductService {
     }
   }
 
-  // Deberia extraer el dato de stock y agregar manualente los datos para inventory ya que siempre sera de entrada y el stock sera el mismo que el stock de product.
-
   async createProduct(productDto: ProductDto): Promise<Product> {
     try {
-      return await this.productRepository.save(productDto);
+      const product = await this.productRepository.save(productDto);
+
+      await this.inventoryRepository.save({
+        product_id: product.stocks.product_id,
+        stock_quantity: productDto.stocks.total_stock,
+        movement_type: MovementType.ENTRADA,
+      });
+      return product;
     } catch (error) {
       this.logger.error(`Error al crear el producto`, error);
       throw new HttpException(
@@ -153,7 +169,6 @@ export class ProductService {
         { total_stock: updatedStock },
       );
 
-
       return await this.inventoryRepository.save(inventoryDto);
     } catch (error) {
       this.logger.error(`Error al registrar un movimiento`, error);
@@ -163,7 +178,6 @@ export class ProductService {
       );
     }
   }
-
 
   async findInventories(id: string): Promise<Inventory[]> {
     try {
@@ -185,4 +199,3 @@ export class ProductService {
     }
   }
 }
-

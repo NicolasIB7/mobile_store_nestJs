@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDto } from './dto/product.dto';
@@ -13,6 +14,8 @@ import { UpdateProductDto } from './dto/update.product.dto';
 import { Product } from './entities/product.entity';
 import { Inventory } from './entities/inventory.entity';
 import { CreateInventoryDto } from './dto/create.inventory.dto';
+import  {PaginateQueryRaw} from './helpers/paginateRaw.interface'
+
 
 @Controller('product')
 export class ProductController {
@@ -28,17 +31,16 @@ export class ProductController {
 
 
   @Get()
-  async getProducts(): Promise<Product[]> {
-    //evitar any
-    return await this.productService.findProducts(); //agregar filtrado, paginado.
+  async getProducts(@Query() query: PaginateQueryRaw): Promise<Product[]> {
+    return await this.productService.findProducts(query); 
   }
 
 
 
   @Delete(':id')
   async deleteProduct(@Param('id') id: string): Promise<any> {
-    //evitar any
-    await this.productService.removeProduct(id); // ver eliminación de todo el producto de todas las tablas.
+
+    await this.productService.removeProduct(id); 
   }
 
 
@@ -73,7 +75,5 @@ export class ProductController {
     return await this.productService.findInventories(id);
   }
 
-  // VER COMO IMPLEMENTAR KAFKA
-  // UTILIZAR TRANSACCIONES PARA HACER TODO DE UNA Y SI FALLA REVERTIR, POR EJEMPLO EN EL CASO DE AGREGAR PROUDCTO Y MODIFICAR TODAS LAS OTRAS TABLAS.
-  // EXISTE EL ENTITYMANAGER PARA HACER AUTOMATICO O QUERY RUNNER QUE ES MAS MANUAL, INVESTIGAR ENTITY
+
 }

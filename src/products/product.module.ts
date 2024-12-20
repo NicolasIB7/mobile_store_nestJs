@@ -1,7 +1,3 @@
-// USARE PIPES VALIDAROES PARA VALIDAR LA DATA QUE ME LLEGA, SI BIEN EXISTEN LOS DTO, ESTOS NO SON VALIDADORES, UNA PERSONA ME PUEDE ENVIAR OTRA 
-//PROPIEDAD CON OTRO TIPADO IGUALMENTE.
-
-
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -22,7 +18,6 @@ import { Spec } from './entities/specs.entity';
       useClass: RolesGuard,
     }
   ],
-  controllers: [ProductController],
-//   exports: []
+  controllers: [ProductController]
 })
 export class ProductModule {}
