@@ -35,6 +35,7 @@ Se utilizaron las mejores prácticas de Nest junto con el potencial de Typescrip
 - Agregar lógica para limitar la cantidad de conexiones al servidor y evitar la sobrecarga.
 - Agregar envio de emails, por ejemplo al crear un nuevo producto.
 - Agregar algún websocket a la API.
+- Agregar testing.
 
 ## Instrucciones de Configuración
 1. Clona el repositorio.
