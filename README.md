@@ -31,7 +31,6 @@ Se utilizaron las mejores prácticas de Nest junto con el potencial de Typescrip
 
 ## Próximas modificaciones
 
-- Agregar cache con Redis para reducir la carga.
 - Agregar lógica para limitar la cantidad de conexiones al servidor y evitar la sobrecarga.
 - Agregar envio de emails, por ejemplo al crear un nuevo producto.
 - Agregar algún websocket a la API.

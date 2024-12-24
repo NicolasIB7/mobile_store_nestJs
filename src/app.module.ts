@@ -5,6 +5,7 @@ import { UserModule } from './users/users.module';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { ProductModule } from './products/product.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ProductModule } from './products/product.module';
         }),
       ],
     }),
+    RedisModule
   ],
 })
 export class AppModule {}

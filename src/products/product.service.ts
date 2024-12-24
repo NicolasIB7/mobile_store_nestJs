@@ -18,6 +18,7 @@ import { Stock } from './entities/stock.entity';
 import { PaginateQueryRaw } from './helpers/paginateRaw.interface';
 import { formatPage } from './helpers/formatPage';
 import { formatTake } from './helpers/formatTake';
+import { RedisClientType } from 'redis';
 
 @Injectable()
 export class ProductService {
@@ -27,6 +28,7 @@ export class ProductService {
     private inventoryRepository: Repository<Inventory>,
     @InjectRepository(Stock) private stockRepository: Repository<Stock>,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+    @Inject('REDIS_CLIENT') private readonly redisClient: RedisClientType,
   ) {}
 
   async findProduct(id: string): Promise<Product[]> {
@@ -49,6 +51,14 @@ export class ProductService {
 
   async findProducts(query: PaginateQueryRaw): Promise<Product[]> {
     try {
+      const cacheKey = `products:${JSON.stringify(query)}`;
+      console.log('cache', cacheKey);
+      const cachedProducts: any = await this.redisClient.get(cacheKey);
+      console.log('cachedProducts', cachedProducts);
+
+      if (cachedProducts) {
+        return cachedProducts;
+      }
       const take = formatTake(query.take);
       const page = formatPage(query.page);
       const skip = take * page - take;
@@ -58,6 +68,13 @@ export class ProductService {
         skip,
         relations: ['stocks', 'specs'],
       });
+
+      const productsString = JSON.stringify(products);
+      const saveCache: any = await this.redisClient.set(
+        cacheKey,
+        productsString,
+      );
+      console.log(saveCache);
 
       if (!products) {
         this.logger.error('Los productos no se encontraron.');
@@ -181,6 +198,15 @@ export class ProductService {
 
   async findInventories(id: string): Promise<Inventory[]> {
     try {
+      const cacheKey = `inventories:${JSON.stringify(id)}`;
+      console.log('cache', cacheKey);
+      const cachedInventory: any = await this.redisClient.get(cacheKey);
+      console.log('cachedInventory', cachedInventory);
+
+      if (cachedInventory) {
+        return cachedInventory;
+      }
+
       const inventory = await this.inventoryRepository.find({
         where: { product_id: id },
       });
@@ -189,6 +215,8 @@ export class ProductService {
         this.logger.error('El inventario no fue encontrado');
         throw new NotFoundException('El inventario no fue encontrado');
       }
+      const inventoryString = JSON.stringify(inventory);
+      await this.redisClient.set(cacheKey, inventoryString);
       return inventory;
     } catch (error) {
       this.logger.error(`Error al encontrar inventario`, error);
